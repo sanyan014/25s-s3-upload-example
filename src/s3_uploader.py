@@ -16,7 +16,7 @@ UPLOAD_INTERVAL = 3
 # Total number of uploads to perform
 NUM_UPLOADS = 4
 # The name of the s3 bucket you're uploading to
-S3_BUCKET_NAME = "ds4300-fontenot-project-bucket"
+# S3_BUCKET_NAME = "ds4300-sleep-raw"
 
 
 # Load the values from .env into dictionary
