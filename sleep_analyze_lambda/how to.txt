@@ -1,0 +1,10 @@
+HOW TO UPDATE THE IMAGE CONTAINER FOR THE ANALYZE LAMBDA FUNCTION 
+
+1. run docker build -t sleep-analyze-local . in the terminal 
+2. run "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 050451361230.dkr.ecr.us-east-1.amazonaws.com"
+    to login to the account
+3. run "docker buildx build --platform linux/amd64 -t 050451361230.dkr.ecr.us-east-1.amazonaws.com/sleep-lambda:latest --push ./sleep_analyze_lambda"
+    updates the image container for the lambda function on aws
+
+
+tamid shared his username and password in the chat. 

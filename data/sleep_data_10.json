@@ -1,0 +1,122 @@
+[
+  {
+    "date": "05/21/2025",
+    "sleep_hours": 5.4,
+    "sleep_quality": 1,
+    "productivity_score": 8
+  },
+  {
+    "date": "05/22/2025",
+    "sleep_hours": 6.1,
+    "sleep_quality": 2,
+    "productivity_score": 9
+  },
+  {
+    "date": "05/23/2025",
+    "sleep_hours": 7.5,
+    "sleep_quality": 1,
+    "productivity_score": 8
+  },
+  {
+    "date": "05/24/2025",
+    "sleep_hours": 8.8,
+    "sleep_quality": 2,
+    "productivity_score": 5
+  },
+  {
+    "date": "05/25/2025",
+    "sleep_hours": 7.4,
+    "sleep_quality": 4,
+    "productivity_score": 7
+  },
+  {
+    "date": "05/26/2025",
+    "sleep_hours": 8.9,
+    "sleep_quality": 5,
+    "productivity_score": 3
+  },
+  {
+    "date": "05/27/2025",
+    "sleep_hours": 6.8,
+    "sleep_quality": 4,
+    "productivity_score": 6
+  },
+  {
+    "date": "05/28/2025",
+    "sleep_hours": 8.3,
+    "sleep_quality": 4,
+    "productivity_score": 9
+  },
+  {
+    "date": "05/29/2025",
+    "sleep_hours": 8.4,
+    "sleep_quality": 3,
+    "productivity_score": 7
+  },
+  {
+    "date": "05/30/2025",
+    "sleep_hours": 8.6,
+    "sleep_quality": 3,
+    "productivity_score": 10
+  },
+  {
+    "date": "05/31/2025",
+    "sleep_hours": 7.2,
+    "sleep_quality": 2,
+    "productivity_score": 3
+  },
+  {
+    "date": "06/01/2025",
+    "sleep_hours": 7.1,
+    "sleep_quality": 4,
+    "productivity_score": 7
+  },
+  {
+    "date": "06/02/2025",
+    "sleep_hours": 8.0,
+    "sleep_quality": 1,
+    "productivity_score": 6
+  },
+  {
+    "date": "06/03/2025",
+    "sleep_hours": 5.3,
+    "sleep_quality": 4,
+    "productivity_score": 3
+  },
+  {
+    "date": "06/04/2025",
+    "sleep_hours": 4.7,
+    "sleep_quality": 4,
+    "productivity_score": 10
+  },
+  {
+    "date": "06/05/2025",
+    "sleep_hours": 4.5,
+    "sleep_quality": 3,
+    "productivity_score": 7
+  },
+  {
+    "date": "06/06/2025",
+    "sleep_hours": 5.3,
+    "sleep_quality": 2,
+    "productivity_score": 9
+  },
+  {
+    "date": "06/07/2025",
+    "sleep_hours": 6.5,
+    "sleep_quality": 4,
+    "productivity_score": 10
+  },
+  {
+    "date": "06/08/2025",
+    "sleep_hours": 4.5,
+    "sleep_quality": 2,
+    "productivity_score": 5
+  },
+  {
+    "date": "06/09/2025",
+    "sleep_hours": 6.3,
+    "sleep_quality": 5,
+    "productivity_score": 6
+  }
+]
