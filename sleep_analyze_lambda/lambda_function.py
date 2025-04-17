@@ -7,10 +7,10 @@ from io import BytesIO
 from scipy.stats import pearsonr
 
 # Get env variables
-DB_HOST = os.environ.get("DB_HOST")
-DB_NAME = os.environ.get("DB_NAME")
-DB_USER = os.environ.get("DB_USER")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = "sleep-prod-db.cur84skoqqm0.us-east-1.rds.amazonaws.com"
+DB_NAME = "sleepdb"
+DB_USER = "postgres"
+DB_PASSWORD = "strongpassword!"
 
 s3 = boto3.client("s3")
 

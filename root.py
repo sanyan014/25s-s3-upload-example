@@ -3,7 +3,7 @@ import psycopg2
 # Fill these in with your actual values
 conn = psycopg2.connect(
     host="sleep-prod-db.cur84skoqqm0.us-east-1.rds.amazonaws.com",
-    database="postgres",
+    database="sleepdb",
     user="postgres",
     password="strongpassword!"
 )
