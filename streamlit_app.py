@@ -1,57 +1,31 @@
+# app.py
 import streamlit as st
-import pandas as pd
 import psycopg2
-import os
-import plotly.express as px
+import pandas as pd
 
-# Load environment variables or set directly
-DB_HOST = os.getenv("DB_HOST", "sleep-prod-db.cur84skoqqm0.us-east-1.rds.amazonaws.com")
-DB_NAME = os.getenv("DB_NAME", "sleepdb")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "strongpassword!")  # Use secrets in production
+# DB credentials
+DB_HOST = "sleep-data-db.cur84skoqqm0.us-east-1.rds.amazonaws.com"
+DB_NAME = "sleepdb"
+DB_USER = "postgres"
+DB_PASSWORD = "strongpassword!"
 
-def get_data():
-    try:
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            dbname=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
-        )
-        query = "SELECT * FROM sleep_stats ORDER BY timestamp DESC LIMIT 50"
-        df = pd.read_sql(query, conn)
-        conn.close()
-        return df
-    except Exception as e:
-        st.error(f"Failed to fetch data: {e}")
-        return pd.DataFrame()
+st.title("Sleep Analysis Dashboard")
 
-# Streamlit layout
-st.set_page_config(page_title="Sleep Stats Dashboard", layout="wide")
-st.title("📈 Sleep Analytics Dashboard")
-st.markdown("Monitor sleep quality, productivity, and correlation over time.")
+try:
+    conn = psycopg2.connect(
+        host=DB_HOST,
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    )
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM sleep_stats ORDER BY timestamp DESC LIMIT 20")
+    rows = cur.fetchall()
 
-df = get_data()
-
-if df.empty:
-    st.warning("No data available yet.")
-else:
-    # Overview metrics
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Avg Sleep Hours", round(df['avg_sleep_hours'].mean(), 2))
-    col2.metric("Avg Productivity", round(df['avg_productivity'].mean(), 2))
-    col3.metric("Correlation", round(df['correlation'].mean(), 2))
-
-    # Plotting
-    st.subheader("🕒 Sleep & Productivity Over Time")
-    fig = px.line(df, x="timestamp", y=["avg_sleep_hours", "avg_productivity"], markers=True)
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.subheader("📌 Correlation Trend")
-    fig_corr = px.line(df, x="timestamp", y="correlation", markers=True)
-    st.plotly_chart(fig_corr, use_container_width=True)
-
-    # Table
-    st.subheader("📄 Raw Data Table")
+    df = pd.DataFrame(rows, columns=["ID", "Avg Sleep", "Avg Productivity", "Correlation", "Timestamp"])
     st.dataframe(df)
 
+    cur.close()
+    conn.close()
+except Exception as e:
+    st.error(f"Failed to load data: {e}")

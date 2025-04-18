@@ -2,10 +2,11 @@ import json
 import boto3
 import pandas as pd
 import psycopg2
+from psycopg2 import sql
 from scipy.stats import pearsonr
 
 # Database connection variables
-DB_HOST = "sleep-prod-db.cur84skoqqm0.us-east-1.rds.amazonaws.com"
+DB_HOST = "sleep-data-db.cur84skoqqm0.us-east-1.rds.amazonaws.com"
 DB_NAME = "sleepdb"
 DB_USER = "postgres"
 DB_PASSWORD = "strongpassword!"
@@ -14,40 +15,51 @@ s3 = boto3.client("s3")
 
 def lambda_handler(event, context):
     try:
-        # 1. Parse S3 trigger event
+        print("🟡 Start of Lambda Execution")
+
+        # 1. Parse event
         record = event["Records"][0]
         bucket = record["s3"]["bucket"]["name"]
         key = record["s3"]["object"]["key"]
-        print(f"Triggered by file: s3://{bucket}/{key}")
+        print(f"📦 Triggered by file: s3://{bucket}/{key}")
 
-        # 2. Load JSON file from S3
+        # 2. Try loading from S3
+        print("🔄 Attempting to load file from S3...")
         obj = s3.get_object(Bucket=bucket, Key=key)
+        print("✅ File fetched from S3")
+
+        # 3. Try parsing JSON
+        print("🔍 Parsing JSON...")
         data = json.load(obj["Body"])
+        print("✅ JSON parsed")
 
-        # 3. Convert to DataFrame
+        # 4. DataFrame conversion
         df = pd.DataFrame(data)
-        print("Loaded data:", df.head())
+        print("🧾 DataFrame preview:\n", df.head())
 
-        # 4. Compute statistics
+        # 5. Compute statistics
         avg_sleep = df["sleep_hours"].mean()
         avg_prod = df["productivity_score"].mean()
         try:
             correlation, _ = pearsonr(df["sleep_hours"], df["productivity_score"])
-        except Exception:
+        except Exception as e:
+            print(f"⚠️ Correlation error: {e}")
             correlation = None
 
-        print(f"avg_sleep={avg_sleep}, avg_prod={avg_prod}, corr={correlation}")
+        print(f"✅ Stats: avg_sleep={avg_sleep}, avg_prod={avg_prod}, corr={correlation}")
 
-        # 5. Connect to RDS
+        print("Connecting to the RDS")
+        # 6. Connect to RDS PostgreSQL
         conn = psycopg2.connect(
-            host=DB_HOST,
-            dbname=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
+            #host=DB_HOST,
+            dbname=DB_NAME
+            #user=DB_USER,
+            #password=DB_PASSWORD
         )
         cur = conn.cursor()
+        print(f"🛠️ Connected to database '{DB_NAME}'")
 
-        # 6. Create table if not exists
+        # 7. Create table if it doesn't exist
         cur.execute("""
             CREATE TABLE IF NOT EXISTS sleep_stats (
                 id SERIAL PRIMARY KEY,
@@ -58,28 +70,28 @@ def lambda_handler(event, context):
             )
         """)
         conn.commit()
+        print("📐 Table 'sleep_stats' ready.")
 
-        # 7. Insert data
-        print("Inserting into DB now...")
+        # 8. Insert row into table
         cur.execute("""
             INSERT INTO sleep_stats (avg_sleep_hours, avg_productivity, correlation)
             VALUES (%s, %s, %s)
         """, (avg_sleep, avg_prod, correlation))
         conn.commit()
-        print("Insert successful!")
+        print("📥 Inserted data successfully!")
 
-        # 8. Close connection
+        # 9. Close resources
         cur.close()
         conn.close()
 
         return {
             "statusCode": 200,
-            "body": f"Inserted stats for {key}"
+            "body": f"✅ Inserted stats for file: {key}"
         }
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"❌ Lambda Error: {str(e)}")
         return {
             "statusCode": 500,
             "body": f"Error: {str(e)}"
-        }
+        }   
