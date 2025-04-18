@@ -1,2 +1,5 @@
 boto3==1.34.34
 python-dotenv==1.0.1 
+pearsonr
+
+pip install streamlit boto3 psycopg2 pandas python-dotenv
