@@ -1,12 +1,10 @@
 import json
-import os
 import boto3
 import pandas as pd
 import psycopg2
-from io import BytesIO
 from scipy.stats import pearsonr
 
-# Get env variables
+# Database connection variables
 DB_HOST = "sleep-prod-db.cur84skoqqm0.us-east-1.rds.amazonaws.com"
 DB_NAME = "sleepdb"
 DB_USER = "postgres"
@@ -16,14 +14,13 @@ s3 = boto3.client("s3")
 
 def lambda_handler(event, context):
     try:
-        # 1. Parse event
+        # 1. Parse S3 trigger event
         record = event["Records"][0]
         bucket = record["s3"]["bucket"]["name"]
         key = record["s3"]["object"]["key"]
-
         print(f"Triggered by file: s3://{bucket}/{key}")
 
-        # 2. Read JSON file from S3
+        # 2. Load JSON file from S3
         obj = s3.get_object(Bucket=bucket, Key=key)
         data = json.load(obj["Body"])
 
@@ -34,8 +31,6 @@ def lambda_handler(event, context):
         # 4. Compute statistics
         avg_sleep = df["sleep_hours"].mean()
         avg_prod = df["productivity_score"].mean()
-
-        # Handle correlation safely
         try:
             correlation, _ = pearsonr(df["sleep_hours"], df["productivity_score"])
         except Exception:
@@ -43,7 +38,7 @@ def lambda_handler(event, context):
 
         print(f"avg_sleep={avg_sleep}, avg_prod={avg_prod}, corr={correlation}")
 
-        # 5. Insert into RDS
+        # 5. Connect to RDS
         conn = psycopg2.connect(
             host=DB_HOST,
             dbname=DB_NAME,
@@ -52,7 +47,7 @@ def lambda_handler(event, context):
         )
         cur = conn.cursor()
 
-        # Create table if not exists
+        # 6. Create table if not exists
         cur.execute("""
             CREATE TABLE IF NOT EXISTS sleep_stats (
                 id SERIAL PRIMARY KEY,
@@ -64,13 +59,16 @@ def lambda_handler(event, context):
         """)
         conn.commit()
 
-        # Insert data
+        # 7. Insert data
+        print("Inserting into DB now...")
         cur.execute("""
             INSERT INTO sleep_stats (avg_sleep_hours, avg_productivity, correlation)
             VALUES (%s, %s, %s)
         """, (avg_sleep, avg_prod, correlation))
-
         conn.commit()
+        print("Insert successful!")
+
+        # 8. Close connection
         cur.close()
         conn.close()
 

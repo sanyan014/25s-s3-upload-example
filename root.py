@@ -13,7 +13,7 @@ cur = conn.cursor()
 # Fetch the latest 10 entries from sleep_stats table
 cur.execute("""
     SELECT id, avg_sleep_hours, avg_productivity, correlation, timestamp 
-    FROM sleep_stats 
+    FROM sleep_db 
     ORDER BY timestamp DESC 
     LIMIT 10
 """)
